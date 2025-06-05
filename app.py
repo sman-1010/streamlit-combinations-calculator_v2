@@ -778,10 +778,10 @@ def main():
                     ws.cell(row=row_idx, column=4, value=S_val).fill = blue_fill
                     ws.cell(row=row_idx, column=5, value="")
                     ws.cell(row=row_idx, column=6, value="")
-                    ws.cell(row=row_idx, column=7, value="Main")
-                    ws.cell(row=row_idx, column=8, value="G")
-                    ws.cell(row=row_idx, column=9, value="R")
-                    ws.cell(row=row_idx, column=10, value="C")
+                    ws.cell(row=row_idx, column=7, value="Priority")
+                    ws.cell(row=row_idx, column=8, value="2nd")
+                    ws.cell(row=row_idx, column=9, value="3rd")
+                    ws.cell(row=row_idx, column=10, value="Backup")
 
                     # The second row
                     triple_str = f"({M_val}, {S_val}, {T_val})"
@@ -818,10 +818,10 @@ def main():
                     ws.cell(row=row_idx, column=4, value=S_val).fill = blue_fill
                     ws.cell(row=row_idx, column=5, value="")
                     ws.cell(row=row_idx, column=6, value="")
-                    ws.cell(row=row_idx, column=7, value="Main")
-                    ws.cell(row=row_idx, column=8, value="G")
-                    ws.cell(row=row_idx, column=9, value="R")
-                    ws.cell(row=row_idx, column=10, value="C")
+                    ws.cell(row=row_idx, column=7, value="Priority")
+                    ws.cell(row=row_idx, column=8, value="2nd")
+                    ws.cell(row=row_idx, column=9, value="3rd")
+                    ws.cell(row=row_idx, column=10, value="Backup")
 
                     # The second row
                     triple_str = f"({M_val}, {S_val}, {T_val})"
@@ -858,10 +858,10 @@ def main():
                     ws.cell(row=row_idx, column=4, value=S_val).fill = blue_fill
                     ws.cell(row=row_idx, column=5, value="")
                     ws.cell(row=row_idx, column=6, value="")
-                    ws.cell(row=row_idx, column=7, value="Main")
-                    ws.cell(row=row_idx, column=8, value="G")
-                    ws.cell(row=row_idx, column=9, value="R")
-                    ws.cell(row=row_idx, column=10, value="C")
+                    ws.cell(row=row_idx, column=7, value="Priority")
+                    ws.cell(row=row_idx, column=8, value="2nd")
+                    ws.cell(row=row_idx, column=9, value="3rd")
+                    ws.cell(row=row_idx, column=10, value="Backup")
 
                     # The second row
                     triple_str = f"({M_val}, {S_val}, {T_val})"
@@ -900,10 +900,10 @@ def main():
                     ws.cell(row=row_idx, column=5, value="")
                     ws.cell(row=row_idx, column=6, value="")
                     ws.cell(row=row_idx, column=7, value="")
-                    ws.cell(row=row_idx, column=8, value="Main")
-                    ws.cell(row=row_idx, column=9, value="G")
-                    ws.cell(row=row_idx, column=10, value="R")
-                    ws.cell(row=row_idx, column=11, value="C")
+                    ws.cell(row=row_idx, column=8, value="Priority")
+                    ws.cell(row=row_idx, column=9, value="2nd")
+                    ws.cell(row=row_idx, column=10, value="3rd")
+                    ws.cell(row=row_idx, column=11, value="Backup")
 
                     # The second row
                     triple_str = f"({M_val}, {S_val}, {T_val})"
