@@ -294,8 +294,8 @@ def main():
     save_with_color = True
 
     # Toggle buttons for user selection
-    toggle_M_S = st.toggle("Strict Main and Subsidary", value=False)
-    strict_switch = st.toggle("Strict Intermediate Values (M1 & M2)", value=True)
+    toggle_M_S = st.toggle("Strict Main and Subsidary", value=True)
+    strict_switch = st.toggle("Strict Intermediate Values (M1 & M2)", value=False)
     toggle_T = st.toggle("Strict Total", value=False)    
 
     st.markdown("---")
