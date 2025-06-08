@@ -40,13 +40,13 @@ def is_valid_triple(A, B, C, counts, strict_switch, nwis):
             return False
     return True
 
-def is_valid_triple_single(M, S, T, counts, strict_switch, nwis):
+def is_valid_triple_single(M, S, T, Gen, Ext, counts, strict_switch, nwis):
     """
     Check if the triple (A, B, C) can be formed with available counts.
     If strict_switch is True, apply extra checks involving nwis.
     """
     from collections import Counter
-    temp_counts = Counter([M, S, T])
+    temp_counts = Counter([M, S, T, Gen, Ext])
     
     # If strict_switch is on, apply extra NWIS logic
     if strict_switch:
@@ -59,13 +59,13 @@ def is_valid_triple_single(M, S, T, counts, strict_switch, nwis):
             return False
     return True
 
-def is_valid_triple_dual(M, S, T, counts, strict_switch, nwis):
+def is_valid_triple_dual(M, S, T, Gen, Ext, counts, strict_switch, nwis):
     """
     Check if the triple (A, B, C) can be formed with available counts.
     If strict_switch is True, apply extra checks involving nwis.
     """
     from collections import Counter
-    temp_counts = Counter([M, S, T])
+    temp_counts = Counter([M, S, T, Gen, Ext])
     
     # If strict_switch is on, apply extra NWIS logic
     if strict_switch:
@@ -80,13 +80,13 @@ def is_valid_triple_dual(M, S, T, counts, strict_switch, nwis):
             return False
     return True
 
-def is_valid_triple_double_dual(M, S, T, counts, strict_switch, nwis):
+def is_valid_triple_double_dual(M, S, T, Gen, Ext, counts, strict_switch, nwis):
     """
     Check if the triple (A, B, C) can be formed with available counts.
     If strict_switch is True, apply extra checks involving nwis.
     """
     from collections import Counter
-    temp_counts = Counter([M, S, T])
+    temp_counts = Counter([M, S, T, Gen, Ext])
     
     # If strict_switch is on, apply extra NWIS logic
     if strict_switch:
@@ -101,13 +101,13 @@ def is_valid_triple_double_dual(M, S, T, counts, strict_switch, nwis):
             return False
     return True
 
-def is_valid_triple_double_single(M, S, T, counts, strict_switch, nwis):
+def is_valid_triple_double_single(M, S, T, Gen, Ext, counts, strict_switch, nwis):
     """
     Check if the triple (A, B, C) can be formed with available counts.
     If strict_switch is True, apply extra checks involving nwis.
     """
     from collections import Counter
-    temp_counts = Counter([M, S, T])
+    temp_counts = Counter([M, S, T, Gen, Ext])
     
     # If strict_switch is on, apply extra NWIS logic
     if strict_switch:
@@ -211,8 +211,10 @@ def main():
         description = """
         <b>Three numbers (Main, Subsidary, Total) selected from Priority, 2nd, 3rd, Backup with conditions:</b>
         <ul>
+            <li>Gen = X1 + 1</li>
             <li>Main = 5 + M1</li>
             <li>Subsidary = M1 + 1</li>
+            <li>Exterior = Total - Main + 2</li>
             <li>Total = 5 + M1</li>
             <li>Intermediate Value of M1 is greater than 0</li>
         </ul>
@@ -222,8 +224,10 @@ def main():
         description = """
         <b>Three numbers (Main, Subsidary, Total) selected from Priority, 2nd, 3rd, Backup with conditions:</b>
         <ul>
+            <li>Gen = X1 + 1</li>
             <li>Main = 5 + M1</li>
             <li>Subsidary = M1 + M2</li>
+            <li>Exterior = Total - Main + 1</li>
             <li>Total = 5 + M1 + M2</li>
             <li>Intermediate Values of M1 and M2 are greater than 0</li>
         </ul>
@@ -233,8 +237,10 @@ def main():
         description = """
         <b>Three numbers (Main, Subsidary, Total) selected from Priority, 2nd, 3rd, Backup with conditions:</b>
         <ul>
+            <li>Gen = X1 + 1</li>
             <li>Main = 8 + M1</li>
             <li>Subsidary = M1 + 1</li>
+            <li>Exterior = Total - Main + 1</li>
             <li>Total = 4 + 8 + M1</li>
             <li>Intermediate Value of M1 is greater than 0</li>
         </ul>
@@ -244,8 +250,10 @@ def main():
         description = """
         <b>Three numbers (Main, Subsidary, Total) selected from Priority, 2nd, 3rd, Backup with conditions:</b>
         <ul>
+            <li>Gen = X1 + 1</li>
             <li>Main = 15 + M1</li>
             <li>Subsidary = M1 + M2</li>
+            <li>Exterior = Total - Main</li>
             <li>Total = 15 + 15 + M1 + M2</li>
             <li>Intermediate Values of M1 and M2 are greater than 0</li>
         </ul>
@@ -297,6 +305,8 @@ def main():
     toggle_M_S = st.toggle("Strict Main and Subsidary", value=True)
     strict_switch = st.toggle("Strict Intermediate Values (M1 & M2)", value=False)
     toggle_T = st.toggle("Strict Total", value=False)    
+    toggle_G = st.toggle("Strict Gen", value=False)    
+    toggle_E = st.toggle("Strict Exterior", value=False)    
 
     st.markdown("---")
     st.subheader("Input Configuration")
@@ -355,23 +365,34 @@ def main():
         if method_selection == 'single':
 
             valid_triples = []
-            for M in unique_sorted:
-                if toggle_M_S and M in nwis:
-                    continue
-                if not M > 5:
-                    continue
-                
-                S = M - 4
-                if S not in counts:
-                    continue
-                if toggle_M_S and S in nwis:
-                    continue
-                
-                T = M
-                if toggle_T and T in nwis:
-                    continue
-                if is_valid_triple_single(M, S, T, counts, strict_switch, nwis):
-                    valid_triples.append((M, S, T))                            
+            temp_skip = False
+            Gen = 6
+            Ext = 2
+            if Gen in counts and Ext in counts:
+                if toggle_G and Gen in nwis:
+                    temp_skip = True                    
+                if toggle_E and Ext in nwis:                
+                    temp_skip = True                    
+
+                if not temp_skip:
+                    for M in unique_sorted:
+                        if toggle_M_S and M in nwis:
+                            continue
+
+                        if not M > 5:
+                            continue
+                        
+                        S = M - 4
+                        if S not in counts:
+                            continue
+                        if toggle_M_S and S in nwis:
+                            continue
+                        
+                        T = M
+                        if toggle_T and T in nwis:
+                            continue
+                        if is_valid_triple_single(M, S, T, Gen, Ext, counts, strict_switch, nwis):
+                            valid_triples.append((M, S, T, Gen, Ext))                            
             
             # 4d) Sort the triples and build a dataframe
             triple_bins = [
@@ -383,29 +404,30 @@ def main():
             rows = []
             for triple, bins_count in triple_bins_sorted:
                 # A, B, C_ = triple
-                M, S, T = triple
+                M, S, T, Gen, Ext = triple
                 # Row: [B, C, A] + [Priority_count, 2nd_count, 3rd_count, Backup_count]
-                rows.append([M, S, T] + bins_count)
+                rows.append([M, S, T, Gen, Ext] + bins_count)
 
-            columns = ['Main', 'Subsidary', 'Total', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count']
+            columns = ['Main', 'Subsidary', 'Total', 'Gen', 'Ext', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count']
             df = pd.DataFrame(rows, columns=columns)
 
             # Keep only rows that used exactly 3 items
-            df = df[df[['Priority_count', '2nd_count', '3rd_count', 'Backup_count']].sum(axis=1) == 3]
+            df = df[df[['Priority_count', '2nd_count', '3rd_count', 'Backup_count']].sum(axis=1) == 5]
             
             # With intermediate values
             rows = []
             for triple, bins_count in triple_bins_sorted:
-                M, S, T = triple
+                # M, S, T = triple
+                M, S, T, Gen, Ext = triple
 
                 # Row: [B, C, A] + [Priority_count, 2nd_count, 3rd_count, Backup_count]
-                rows.append([M, S, T]+[M-5, 0] + bins_count)
+                rows.append([M, S, T, Gen, Ext]+[M-5, 0] + bins_count)
 
-            columns_triple = ['Main', 'Subsidary', 'Total','M1','M2', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count']
+            columns_triple = ['Main', 'Subsidary', 'Total', 'Gen', 'Ext','M1','M2', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count']
             df_with_inter = pd.DataFrame(rows, columns=columns_triple)
 
             # Keep only rows that used exactly 3 items
-            df_with_inter = df_with_inter[df_with_inter[['Priority_count', '2nd_count', '3rd_count', 'Backup_count']].sum(axis=1) == 3]
+            df_with_inter = df_with_inter[df_with_inter[['Priority_count', '2nd_count', '3rd_count', 'Backup_count']].sum(axis=1) == 5]
             
             st.success("Combinations generated!")
 
@@ -416,12 +438,12 @@ def main():
             # Creating the new DataFrame with empty spaces
             new_rows = []
             for _, row in df_with_inter.iterrows():
-                new_rows.append(['', row['Main'], row['Subsidary'], '', '', 'Main', '2nd', '3rd', 'Backup'])
-                new_rows.append([5, row['M1'], row['M2'], row['Total'], '', row['Priority_count'], row['2nd_count'], row['3rd_count'], row['Backup_count']])
-                new_rows.append([''] * 9)  # Empty row
+                new_rows.append([5, row['M1'], row['M2'],'', row['Total'], '', row['Priority_count'], row['2nd_count'], row['3rd_count'], row['Backup_count']])
+                new_rows.append([row['Gen'], row['Main'], row['Subsidary'],row['Ext'], '', '', 'Main', '2nd', '3rd', 'Backup'])
+                new_rows.append([''] * 10)  # Empty row
 
             # Creating the new DataFrame
-            columns_triple = ['-', 'Main', 'Subsidary','Total','--', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count']
+            columns_triple = ['Gen', 'Main', 'Subsidary','Exterior','Total','--', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count']
             df_formatted = pd.DataFrame(new_rows, columns=columns_triple)
             df_formatted.index = range(1, len(df_formatted) + 1)
             st.write("Combinations Visualized:")
@@ -430,23 +452,40 @@ def main():
         elif method_selection == 'dual':
 
             valid_triples = []
-            for M in unique_sorted:
-                if toggle_M_S and M in nwis:
-                    continue
-                if not M > 5:
-                    continue
+            temp_skip = False
+            Gen = 6
+            if Gen in counts:
+                if toggle_G and Gen in nwis:
+                    temp_skip = True                    
+                # if toggle_E and Ext in nwis:                
+                #     temp_skip = True           
                 
-                M1 = M - 5
-                for S in unique_sorted:
-                    if not S > M1:
-                        continue
-                    T = S + 5
-                    if T not in counts:
-                        continue                        
-                    if toggle_T and T in nwis:
-                        continue
-                    if is_valid_triple_dual(M, S, T, counts, strict_switch, nwis):
-                        valid_triples.append((M, S, T))   
+                if not temp_skip:
+                    for M in unique_sorted:
+                        if toggle_M_S and M in nwis:
+                            continue
+                        if not M > 5:
+                            continue
+                        
+                        M1 = M - 5
+                        for S in unique_sorted:
+                            if not S > M1:
+                                continue
+                            
+                            T = S + 5
+                            if T not in counts:
+                                continue                        
+                            if toggle_T and T in nwis:
+                                continue
+                            
+                            Ext = S - M + 6
+                            if Ext not in counts:
+                                continue          
+                            if toggle_E and Ext in nwis:
+                                continue
+  
+                            if is_valid_triple_dual(M, S, T, Gen, Ext, counts, strict_switch, nwis):
+                                valid_triples.append((M, S, T, Gen, Ext))                                    
 
                          
             
@@ -460,29 +499,29 @@ def main():
             rows = []
             for triple, bins_count in triple_bins_sorted:
                 # A, B, C_ = triple
-                M, S, T = triple
+                M, S, T, Gen, Ext = triple
                 # Row: [B, C, A] + [Priority_count, 2nd_count, 3rd_count, Backup_count]
-                rows.append([M, S, T] + bins_count)
+                rows.append([M, S, T, Gen, Ext] + bins_count)
 
-            columns = ['Main', 'Subsidary', 'Total', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count']
+            columns = ['Main', 'Subsidary', 'Total', 'Gen', 'Ext', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count']
             df = pd.DataFrame(rows, columns=columns)
 
             # Keep only rows that used exactly 3 items
-            df = df[df[['Priority_count', '2nd_count', '3rd_count', 'Backup_count']].sum(axis=1) == 3]
+            df = df[df[['Priority_count', '2nd_count', '3rd_count', 'Backup_count']].sum(axis=1) == 5]
             
             # With intermediate values
             rows = []
             for triple, bins_count in triple_bins_sorted:
-                M, S, T = triple
+                M, S, T, Gen, Ext = triple
 
                 # Row: [B, C, A] + [Priority_count, 2nd_count, 3rd_count, Backup_count]
-                rows.append([M, S, T]+[M-5, S-M+5] + bins_count)
+                rows.append([M, S, T, Gen, Ext]+[M-5, S-M+5] + bins_count)
 
-            columns_triple = ['Main', 'Subsidary', 'Total','M1','M2', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count']
+            columns_triple = ['Main', 'Subsidary', 'Total', 'Gen', 'Ext','M1','M2', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count']
             df_with_inter = pd.DataFrame(rows, columns=columns_triple)
 
             # Keep only rows that used exactly 3 items
-            df_with_inter = df_with_inter[df_with_inter[['Priority_count', '2nd_count', '3rd_count', 'Backup_count']].sum(axis=1) == 3]
+            df_with_inter = df_with_inter[df_with_inter[['Priority_count', '2nd_count', '3rd_count', 'Backup_count']].sum(axis=1) == 5]
             
             st.success("Combinations generated!")
 
@@ -493,12 +532,15 @@ def main():
             # Creating the new DataFrame with empty spaces
             new_rows = []
             for _, row in df_with_inter.iterrows():
-                new_rows.append(['', row['Main'], row['Subsidary'], '', '', 'Main', '2nd', '3rd', 'Backup'])
-                new_rows.append([5, row['M1'], row['M2'], row['Total'], '', row['Priority_count'], row['2nd_count'], row['3rd_count'], row['Backup_count']])
-                new_rows.append([''] * 9)  # Empty row
+                # new_rows.append(['', row['Main'], row['Subsidary'], '', '', 'Main', '2nd', '3rd', 'Backup'])
+                # new_rows.append([5, row['M1'], row['M2'], row['Total'], '', row['Priority_count'], row['2nd_count'], row['3rd_count'], row['Backup_count']])
+                # new_rows.append([''] * 9)  # Empty row
+                new_rows.append([5, row['M1'], row['M2'],'', row['Total'], '', row['Priority_count'], row['2nd_count'], row['3rd_count'], row['Backup_count']])
+                new_rows.append([row['Gen'], row['Main'], row['Subsidary'],row['Ext'], '', '', 'Main', '2nd', '3rd', 'Backup'])
+                new_rows.append([''] * 10)  # Empty row                
 
             # Creating the new DataFrame
-            columns_triple = ['-', 'Main', 'Subsidary','Total','--', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count']
+            columns_triple = ['Gen', 'Main', 'Subsidary','Exterior','Total','--', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count']
             df_formatted = pd.DataFrame(new_rows, columns=columns_triple)
             df_formatted.index = range(1, len(df_formatted) + 1)
             st.write("Combinations Visualized:")
@@ -507,26 +549,38 @@ def main():
         elif method_selection == 'double_single':
 
             valid_triples = []
-            for M in unique_sorted:
-                if toggle_M_S and M in nwis:
-                    continue
-                if not M > 8:
-                    continue
+            temp_skip = False
+            Gen = 6
+            Ext = Gen
+            if Gen in counts:
+                if toggle_G and Gen in nwis:
+                    temp_skip = True                    
+                if toggle_E and Ext in nwis:                
+                    temp_skip = True           
                 
-                S = M - 7
-                if S not in counts:
-                    continue
-                if toggle_M_S and S in nwis:
-                    continue
+                if not temp_skip:            
+                    for M in unique_sorted:
+                        if toggle_M_S and M in nwis:
+                            continue
+                        if not M > 8:
+                            continue
+                        
+                        S = M - 7
+                        if S not in counts:
+                            continue
+                        if toggle_M_S and S in nwis:
+                            continue
 
-                T = 4 + M
-                if T not in counts:
-                    continue    
-                if toggle_T and T in nwis:
-                    continue
+                        T = 5 + M
+                        if T not in counts:
+                            continue    
+                        if toggle_T and T in nwis:
+                            continue
 
-                if is_valid_triple_dual(M, S, T, counts, strict_switch, nwis):
-                    valid_triples.append((M, S, T))   
+                        # if is_valid_triple_dual(M, S, T, counts, strict_switch, nwis):
+                        #     valid_triples.append((M, S, T))   
+                        if is_valid_triple_double_single(M, S, T, Gen, Ext, counts, strict_switch, nwis):
+                            valid_triples.append((M, S, T, Gen, Ext))                              
 
                          
             
@@ -540,29 +594,29 @@ def main():
             rows = []
             for triple, bins_count in triple_bins_sorted:
                 # A, B, C_ = triple
-                M, S, T = triple
+                M, S, T, Gen, Ext = triple
                 # Row: [B, C, A] + [Priority_count, 2nd_count, 3rd_count, Backup_count]
-                rows.append([M, S, T] + bins_count)
+                rows.append([M, S, T, Gen, Ext] + bins_count)
 
-            columns = ['Main', 'Subsidary', 'Total', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count']
+            columns = ['Main', 'Subsidary', 'Total', 'Gen', 'Ext', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count']
             df = pd.DataFrame(rows, columns=columns)
 
             # Keep only rows that used exactly 3 items
-            df = df[df[['Priority_count', '2nd_count', '3rd_count', 'Backup_count']].sum(axis=1) == 3]
+            df = df[df[['Priority_count', '2nd_count', '3rd_count', 'Backup_count']].sum(axis=1) == 5]
             
             # With intermediate values
             rows = []
             for triple, bins_count in triple_bins_sorted:
-                M, S, T = triple
+                M, S, T, Gen, Ext = triple
 
                 # Row: [B, C, A] + [Priority_count, 2nd_count, 3rd_count, Backup_count]
-                rows.append([M, S, T]+[S-1] + bins_count)
+                rows.append([M, S, T, Gen, Ext]+[S-1] + bins_count)
 
-            columns_triple = ['Main', 'Subsidary', 'Total','M1', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count']
+            columns_triple = ['Main', 'Subsidary', 'Total', 'Gen', 'Ext', 'M1', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count']
             df_with_inter = pd.DataFrame(rows, columns=columns_triple)
 
             # Keep only rows that used exactly 3 items
-            df_with_inter = df_with_inter[df_with_inter[['Priority_count', '2nd_count', '3rd_count', 'Backup_count']].sum(axis=1) == 3]
+            df_with_inter = df_with_inter[df_with_inter[['Priority_count', '2nd_count', '3rd_count', 'Backup_count']].sum(axis=1) == 5]
             
             st.success("Combinations generated!")
 
@@ -573,12 +627,12 @@ def main():
             # Creating the new DataFrame with empty spaces
             new_rows = []
             for _, row in df_with_inter.iterrows():
-                new_rows.append(['', row['Main'], row['Subsidary'], '', '', 'Main', '2nd', '3rd', 'Backup'])
-                new_rows.append([4, 8, row['M1'], row['Total'], '', row['Priority_count'], row['2nd_count'], row['3rd_count'], row['Backup_count']])
-                new_rows.append([''] * 9)  # Empty row
+                new_rows.append([5, 8, row['M1'],'', row['Total'], '', row['Priority_count'], row['2nd_count'], row['3rd_count'], row['Backup_count']])
+                new_rows.append([row['Gen'], row['Main'], row['Subsidary'],row['Ext'], '', '', 'Main', '2nd', '3rd', 'Backup'])
+                new_rows.append([''] * 10 )  # Empty row
 
             # Creating the new DataFrame
-            columns_triple = ['-', 'Main', 'Subsidary','Total','--', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count']
+            columns_triple = ['Gen', 'Main', 'Subsidary','Exterior','Total','--', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count']
             df_formatted = pd.DataFrame(new_rows, columns=columns_triple)
             df_formatted.index = range(1, len(df_formatted) + 1)
             st.write("Combinations Visualized:")
@@ -588,23 +642,40 @@ def main():
         elif method_selection == 'double_dual':
 
             valid_triples = []
-            for M in unique_sorted:
-                if toggle_M_S and M in nwis:
-                    continue
-                if not M > 15:
-                    continue
+            temp_skip = False
+            Gen = 6
+            if Gen in counts:
+                if toggle_G and Gen in nwis:
+                    temp_skip = True                    
+                # if toggle_E and Ext in nwis:                
+                #     temp_skip = True           
                 
-                M1 = M - 15
-                for S in unique_sorted:
-                    if not S > M1:
-                        continue
-                    T = S + 30
-                    if T not in counts:
-                        continue                        
-                    if toggle_T and T in nwis:
-                        continue
-                    if is_valid_triple_double_dual(M, S, T, counts, strict_switch, nwis):
-                        valid_triples.append((M, S, T))   
+                if not temp_skip:            
+                    for M in unique_sorted:
+                        if toggle_M_S and M in nwis:
+                            continue
+                        if not M > 15:
+                            continue
+                        
+                        M1 = M - 15
+                        for S in unique_sorted:
+                            if not S > M1:
+                                continue
+                            
+                            T = S + 20
+                            if T not in counts:
+                                continue                        
+                            if toggle_T and T in nwis:
+                                continue
+
+                            Ext = S - M + 20
+                            if Ext not in counts:
+                                continue          
+                            if toggle_E and Ext in nwis:
+                                continue
+
+                            if is_valid_triple_double_dual(M, S, T, Gen, Ext, counts, strict_switch, nwis):
+                                valid_triples.append((M, S, T, Gen, Ext))   
 
                          
             
@@ -618,29 +689,29 @@ def main():
             rows = []
             for triple, bins_count in triple_bins_sorted:
                 # A, B, C_ = triple
-                M, S, T = triple
+                M, S, T, Gen, Ext = triple
                 # Row: [B, C, A] + [Priority_count, 2nd_count, 3rd_count, Backup_count]
-                rows.append([M, S, T] + bins_count)
+                rows.append([M, S, T, Gen, Ext] + bins_count)
 
-            columns = ['Main', 'Subsidary', 'Total', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count']
+            columns = ['Main', 'Subsidary', 'Total', 'Gen', 'Ext', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count']
             df = pd.DataFrame(rows, columns=columns)
 
             # Keep only rows that used exactly 3 items
-            df = df[df[['Priority_count', '2nd_count', '3rd_count', 'Backup_count']].sum(axis=1) == 3]
+            df = df[df[['Priority_count', '2nd_count', '3rd_count', 'Backup_count']].sum(axis=1) == 5]
             
             # With intermediate values
             rows = []
             for triple, bins_count in triple_bins_sorted:
-                M, S, T = triple
+                M, S, T, Gen, Ext = triple
 
                 # Row: [B, C, A] + [Priority_count, 2nd_count, 3rd_count, Backup_count]
-                rows.append([M, S, T]+[M-15, S-M+15] + bins_count)
+                rows.append([M, S, T, Gen, Ext]+[M-15, S-M+15] + bins_count)
 
-            columns_triple = ['Main', 'Subsidary', 'Total','M1','M2', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count']
+            columns_triple = ['Main', 'Subsidary', 'Total', 'Gen', 'Ext','M1','M2', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count']
             df_with_inter = pd.DataFrame(rows, columns=columns_triple)
 
             # Keep only rows that used exactly 3 items
-            df_with_inter = df_with_inter[df_with_inter[['Priority_count', '2nd_count', '3rd_count', 'Backup_count']].sum(axis=1) == 3]
+            df_with_inter = df_with_inter[df_with_inter[['Priority_count', '2nd_count', '3rd_count', 'Backup_count']].sum(axis=1) == 5]
             
             st.success("Combinations generated!")
 
@@ -651,12 +722,12 @@ def main():
             # Creating the new DataFrame with empty spaces
             new_rows = []
             for _, row in df_with_inter.iterrows():
-                new_rows.append(['', row['Main'], row['Subsidary'], '','', '', 'Main', '2nd', '3rd', 'Backup'])
-                new_rows.append([15,15, row['M1'], row['M2'], row['Total'], '', row['Priority_count'], row['2nd_count'], row['3rd_count'], row['Backup_count']])
+                new_rows.append([5,15, row['M1'], row['M2'],'', row['Total'], '', row['Priority_count'], row['2nd_count'], row['3rd_count'], row['Backup_count']])
+                new_rows.append([6, row['Main'], row['Subsidary'], '',row['Ext'],'', '', 'Main', '2nd', '3rd', 'Backup'])
                 new_rows.append([''] * 10)  # Empty row
 
             # Creating the new DataFrame
-            columns_triple = ['-', 'Main', 'Subsidary','---','Total','--', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count']
+            columns_triple = ['Gen', 'Main', 'Subsidary','---','Exterior','Total','--', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count']
             df_formatted = pd.DataFrame(new_rows, columns=columns_triple)
             df_formatted.index = range(1, len(df_formatted) + 1)
             st.write("Combinations Visualized:")
