@@ -399,7 +399,11 @@ def main():
                 (triple, compute_bins(triple, Main, G, R, C_list)) 
                 for triple in valid_triples
             ]
-            triple_bins_sorted = sorted(triple_bins, key=lambda x: x[0][0])
+            # triple_bins_sorted = sorted(triple_bins, key=lambda x: x[0][0])
+            triple_bins_sorted = sorted(
+                triple_bins,
+                key=lambda x: (-x[1][0], -x[1][1], -x[1][2], -x[1][3], x[0])
+            )            
 
             rows = []
             for triple, bins_count in triple_bins_sorted:
@@ -494,7 +498,14 @@ def main():
                 (triple, compute_bins(triple, Main, G, R, C_list)) 
                 for triple in valid_triples
             ]
-            triple_bins_sorted = sorted(triple_bins, key=lambda x: x[0][0])
+            # Sort by bins in descending priority order
+            triple_bins_sorted = sorted(
+                triple_bins,
+                key=lambda x: (-x[1][0], -x[1][1], -x[1][2], -x[1][3], x[0])
+            )
+
+
+            # triple_bins_sorted = sorted(triple_bins, key=lambda x: x[0][0])
 
             rows = []
             for triple, bins_count in triple_bins_sorted:
@@ -589,7 +600,11 @@ def main():
                 (triple, compute_bins(triple, Main, G, R, C_list)) 
                 for triple in valid_triples
             ]
-            triple_bins_sorted = sorted(triple_bins, key=lambda x: x[0][0])
+            # Sort by bins in descending priority order
+            triple_bins_sorted = sorted(
+                triple_bins,
+                key=lambda x: (-x[1][0], -x[1][1], -x[1][2], -x[1][3], x[0])
+            )
 
             rows = []
             for triple, bins_count in triple_bins_sorted:
@@ -684,7 +699,11 @@ def main():
                 (triple, compute_bins(triple, Main, G, R, C_list)) 
                 for triple in valid_triples
             ]
-            triple_bins_sorted = sorted(triple_bins, key=lambda x: x[0][0])
+            # Sort by bins in descending priority order
+            triple_bins_sorted = sorted(
+                triple_bins,
+                key=lambda x: (-x[1][0], -x[1][1], -x[1][2], -x[1][3], x[0])
+            )
 
             rows = []
             for triple, bins_count in triple_bins_sorted:
@@ -824,14 +843,22 @@ def main():
             # We'll build the colored Excel directly with openpyxl
             from openpyxl import Workbook
             from openpyxl.styles import PatternFill
+            from openpyxl.styles import Alignment
+
 
             wb = Workbook()
             ws = wb.active
+            center = Alignment(horizontal="center", vertical="center")
 
             # Define color fills
-            green_fill  = PatternFill(start_color="9AE79C", fill_type="solid")
-            blue_fill   = PatternFill(start_color="BBE3F1", fill_type="solid")
-            yellow_fill = PatternFill(start_color="FCFFC6", fill_type="solid")
+            green_fill  = PatternFill(start_color="92D051", fill_type="solid")
+            blue_fill   = PatternFill(start_color="06B0F0", fill_type="solid")
+            yellow_fill = PatternFill(start_color="FFFF00", fill_type="solid")
+            light_blue_fill = PatternFill(start_color="CAEDFB", fill_type="solid")
+            purple_fill = PatternFill(start_color="D86DCD", fill_type="solid")
+            tea_green_fill = PatternFill(start_color="C0F0C8", fill_type="solid")
+            orange_fill = PatternFill(start_color="FFBF00", fill_type="solid")
+            peach_fill = PatternFill(start_color="F1A983", fill_type="solid")
 
             # We want to replicate the same 3-row block structure
             idx = 0  # to iterate over df rows in groups of 1 (each row = one triple in df)
@@ -841,76 +868,138 @@ def main():
                     M_val = df.iloc[idx]['Main']
                     S_val = df.iloc[idx]['Subsidary']
                     T_val = df.iloc[idx]['Total']
+                    G_val = df.iloc[idx]['Gen']
+                    E_val = df.iloc[idx]['Ext']
+                    M1_val = df_with_inter.iloc[idx]['M1']
 
-                    # The top row
                     ws.cell(row=row_idx, column=1, value="")
-                    ws.cell(row=row_idx, column=2, value="")
-                    ws.cell(row=row_idx, column=3, value=M_val).fill = green_fill
-                    ws.cell(row=row_idx, column=4, value=S_val).fill = blue_fill
+                    ws.cell(row=row_idx, column=2, value="X").fill = blue_fill
+                    ws.cell(row=row_idx, column=3, value="M1").fill = yellow_fill
+                    ws.cell(row=row_idx, column=4, value="")
                     ws.cell(row=row_idx, column=5, value="")
-                    ws.cell(row=row_idx, column=6, value="")
-                    ws.cell(row=row_idx, column=7, value="Priority")
-                    ws.cell(row=row_idx, column=8, value="2nd")
-                    ws.cell(row=row_idx, column=9, value="3rd")
-                    ws.cell(row=row_idx, column=10, value="Backup")
-
+                    ws.cell(row=row_idx, column=6, value="Dual").fill = purple_fill
+                    for col in range(1, 12):               # 1–11 in your snippet
+                        ws.cell(row=row_idx, column=col).alignment = center
+                    
+                    row_idx = row_idx + 1
+                    # The top row
+                    ws.cell(row=row_idx, column=1, value="(M,S,T,G,E)")
+                    ws.cell(row=row_idx, column=2, value=5).fill = blue_fill
+                    ws.cell(row=row_idx, column=3, value=M1_val).fill = yellow_fill
+                    ws.cell(row=row_idx, column=4, value="")
+                    ws.cell(row=row_idx, column=5, value="")
+                    ws.cell(row=row_idx, column=6, value=T_val).fill = orange_fill
+                    ws.cell(row=row_idx, column=7, value="")
+                    ws.cell(row=row_idx, column=8, value="Priority")
+                    ws.cell(row=row_idx, column=9, value="2nd")
+                    ws.cell(row=row_idx, column=10, value="3rd")
+                    ws.cell(row=row_idx, column=11, value="Backup")
+                    for col in range(1, 12):               # 1–11 in your snippet
+                        ws.cell(row=row_idx, column=col).alignment = center
+                    
                     # The second row
-                    triple_str = f"({M_val}, {S_val}, {T_val})"
-                    row_2 = row_idx + 1
-                    ws.cell(row=row_2, column=1, value=triple_str)
-                    ws.cell(row=row_2, column=2, value=5)
-                    ws.cell(row=row_2, column=3, value=(M_val - 5))
-                    ws.cell(row=row_2, column=4, value=(0))
-                    ws.cell(row=row_2, column=5, value=T_val).fill = yellow_fill
+                    triple_str = f"({M_val}, {S_val}, {T_val}, {G_val}, {E_val})"
+                    row_idx = row_idx + 1
+                    ws.cell(row=row_idx, column=1, value=triple_str)
+                    ws.cell(row=row_idx, column=2, value=G_val).fill = light_blue_fill
+                    ws.cell(row=row_idx, column=3, value=M_val).fill = purple_fill
+                    ws.cell(row=row_idx, column=4, value=S_val).fill = green_fill
+                    ws.cell(row=row_idx, column=5, value=E_val).fill = tea_green_fill
+                    ws.cell(row=row_idx, column=6, value="").fill = orange_fill
+                    ws.cell(row=row_idx, column=7, value="")
+                    # ws.cell(row=row_2, column=5, value=T_val).fill = yellow_fill
 
                     # We also want to show counts in columns 7..10:
-                    ws.cell(row=row_2, column=7, value=df.iloc[idx]['Priority_count'])
-                    ws.cell(row=row_2, column=8, value=df.iloc[idx]['2nd_count'])
-                    ws.cell(row=row_2, column=9, value=df.iloc[idx]['3rd_count'])
-                    ws.cell(row=row_2, column=10, value=df.iloc[idx]['Backup_count'])
+                    ws.cell(row=row_idx, column=8, value=df.iloc[idx]['Priority_count'])
+                    ws.cell(row=row_idx, column=9, value=df.iloc[idx]['2nd_count'])
+                    ws.cell(row=row_idx, column=10, value=df.iloc[idx]['3rd_count'])
+                    ws.cell(row=row_idx, column=11, value=df.iloc[idx]['Backup_count'])
+                    for col in range(1, 12):               # 1–11 in your snippet
+                        ws.cell(row=row_idx, column=col).alignment = center
 
+                    row_idx+=1
+                    ws.cell(row=row_idx, column=1, value="")
+                    ws.cell(row=row_idx, column=2, value="Gen").fill = light_blue_fill
+                    ws.cell(row=row_idx, column=3, value="Main").fill = purple_fill
+                    ws.cell(row=row_idx, column=4, value="Subsidary").fill = green_fill
+                    ws.cell(row=row_idx, column=5, value="Exterior").fill = tea_green_fill
+                    ws.cell(row=row_idx, column=6, value="Total").fill = orange_fill
+                    for col in range(1, 12):               # 1–11 in your snippet
+                        ws.cell(row=row_idx, column=col).alignment = center
                     # The third row is blank
-                    for c in range(1, 11):
+                    for c in range(1, 12):
                         ws.cell(row=row_idx+2, column=c, value="")
 
                     # Move to the next triple
                     row_idx += 3
                     idx += 1
+
             elif method_selection == 'dual':
                 while idx < len(df):
                     M_val = df.iloc[idx]['Main']
                     S_val = df.iloc[idx]['Subsidary']
                     T_val = df.iloc[idx]['Total']
+                    G_val = df.iloc[idx]['Gen']
+                    E_val = df.iloc[idx]['Ext']
+                    M1_val = df_with_inter.iloc[idx]['M1']
+                    M2_val = df_with_inter.iloc[idx]['M2']                    
 
-                    # The top row
                     ws.cell(row=row_idx, column=1, value="")
-                    ws.cell(row=row_idx, column=2, value="")
-                    ws.cell(row=row_idx, column=3, value=M_val).fill = green_fill
-                    ws.cell(row=row_idx, column=4, value=S_val).fill = blue_fill
+                    ws.cell(row=row_idx, column=2, value="X").fill = blue_fill
+                    ws.cell(row=row_idx, column=3, value="M1").fill = yellow_fill
+                    ws.cell(row=row_idx, column=4, value="M2").fill = peach_fill
                     ws.cell(row=row_idx, column=5, value="")
-                    ws.cell(row=row_idx, column=6, value="")
-                    ws.cell(row=row_idx, column=7, value="Priority")
-                    ws.cell(row=row_idx, column=8, value="2nd")
-                    ws.cell(row=row_idx, column=9, value="3rd")
-                    ws.cell(row=row_idx, column=10, value="Backup")
-
+                    ws.cell(row=row_idx, column=6, value="Single").fill = purple_fill
+                    for col in range(1, 12):               # 1–11 in your snippet
+                        ws.cell(row=row_idx, column=col).alignment = center
+                    
+                    row_idx = row_idx + 1
+                    # The top row
+                    ws.cell(row=row_idx, column=1, value="(M,S,T,G,E)")
+                    ws.cell(row=row_idx, column=2, value=5).fill = blue_fill
+                    ws.cell(row=row_idx, column=3, value=M1_val).fill = yellow_fill
+                    ws.cell(row=row_idx, column=4, value=M2_val).fill = peach_fill
+                    ws.cell(row=row_idx, column=5, value="")
+                    ws.cell(row=row_idx, column=6, value=T_val).fill = orange_fill
+                    ws.cell(row=row_idx, column=7, value="")
+                    ws.cell(row=row_idx, column=8, value="Priority")
+                    ws.cell(row=row_idx, column=9, value="2nd")
+                    ws.cell(row=row_idx, column=10, value="3rd")
+                    ws.cell(row=row_idx, column=11, value="Backup")
+                    for col in range(1, 12):               # 1–11 in your snippet
+                        ws.cell(row=row_idx, column=col).alignment = center
+                    
                     # The second row
-                    triple_str = f"({M_val}, {S_val}, {T_val})"
-                    row_2 = row_idx + 1
-                    ws.cell(row=row_2, column=1, value=triple_str)
-                    ws.cell(row=row_2, column=2, value=5)
-                    ws.cell(row=row_2, column=3, value=(M_val - 5))
-                    ws.cell(row=row_2, column=4, value=(S_val - M_val + 5))
-                    ws.cell(row=row_2, column=5, value=T_val).fill = yellow_fill
+                    triple_str = f"({M_val}, {S_val}, {T_val}, {G_val}, {E_val})"
+                    row_idx = row_idx + 1
+                    ws.cell(row=row_idx, column=1, value=triple_str)
+                    ws.cell(row=row_idx, column=2, value=G_val).fill = light_blue_fill
+                    ws.cell(row=row_idx, column=3, value=M_val).fill = purple_fill
+                    ws.cell(row=row_idx, column=4, value=S_val).fill = green_fill
+                    ws.cell(row=row_idx, column=5, value=E_val).fill = tea_green_fill
+                    ws.cell(row=row_idx, column=6, value="").fill = orange_fill
+                    ws.cell(row=row_idx, column=7, value="")
+                    # ws.cell(row=row_2, column=5, value=T_val).fill = yellow_fill
 
                     # We also want to show counts in columns 7..10:
-                    ws.cell(row=row_2, column=7, value=df.iloc[idx]['Priority_count'])
-                    ws.cell(row=row_2, column=8, value=df.iloc[idx]['2nd_count'])
-                    ws.cell(row=row_2, column=9, value=df.iloc[idx]['3rd_count'])
-                    ws.cell(row=row_2, column=10, value=df.iloc[idx]['Backup_count'])
+                    ws.cell(row=row_idx, column=8, value=df.iloc[idx]['Priority_count'])
+                    ws.cell(row=row_idx, column=9, value=df.iloc[idx]['2nd_count'])
+                    ws.cell(row=row_idx, column=10, value=df.iloc[idx]['3rd_count'])
+                    ws.cell(row=row_idx, column=11, value=df.iloc[idx]['Backup_count'])
+                    for col in range(1, 12):               # 1–11 in your snippet
+                        ws.cell(row=row_idx, column=col).alignment = center
 
+                    row_idx+=1
+                    ws.cell(row=row_idx, column=1, value="")
+                    ws.cell(row=row_idx, column=2, value="Gen").fill = light_blue_fill
+                    ws.cell(row=row_idx, column=3, value="Main").fill = purple_fill
+                    ws.cell(row=row_idx, column=4, value="Subsidary").fill = green_fill
+                    ws.cell(row=row_idx, column=5, value="Exterior").fill = tea_green_fill
+                    ws.cell(row=row_idx, column=6, value="Total").fill = orange_fill
+                    for col in range(1, 12):               # 1–11 in your snippet
+                        ws.cell(row=row_idx, column=col).alignment = center
                     # The third row is blank
-                    for c in range(1, 11):
+                    for c in range(1, 12):
                         ws.cell(row=row_idx+2, column=c, value="")
 
                     # Move to the next triple
@@ -921,36 +1010,66 @@ def main():
                     M_val = df.iloc[idx]['Main']
                     S_val = df.iloc[idx]['Subsidary']
                     T_val = df.iloc[idx]['Total']
+                    G_val = df.iloc[idx]['Gen']
+                    E_val = df.iloc[idx]['Ext']
+                    M1_val = df_with_inter.iloc[idx]['M1']
 
-                    # The top row
                     ws.cell(row=row_idx, column=1, value="")
-                    ws.cell(row=row_idx, column=2, value="")
-                    ws.cell(row=row_idx, column=3, value=M_val).fill = green_fill
-                    ws.cell(row=row_idx, column=4, value=S_val).fill = blue_fill
+                    ws.cell(row=row_idx, column=2, value="X1").fill = blue_fill
+                    ws.cell(row=row_idx, column=3, value="X2").fill = blue_fill
+                    ws.cell(row=row_idx, column=4, value="M1").fill = yellow_fill
                     ws.cell(row=row_idx, column=5, value="")
-                    ws.cell(row=row_idx, column=6, value="")
-                    ws.cell(row=row_idx, column=7, value="Priority")
-                    ws.cell(row=row_idx, column=8, value="2nd")
-                    ws.cell(row=row_idx, column=9, value="3rd")
-                    ws.cell(row=row_idx, column=10, value="Backup")
-
+                    ws.cell(row=row_idx, column=6, value="Double Single").fill = purple_fill
+                    for col in range(1, 12):               # 1–11 in your snippet
+                        ws.cell(row=row_idx, column=col).alignment = center
+                    
+                    row_idx = row_idx + 1
+                    # The top row
+                    ws.cell(row=row_idx, column=1, value="(M,S,T,G,E)")
+                    ws.cell(row=row_idx, column=2, value=5).fill = blue_fill
+                    ws.cell(row=row_idx, column=3, value=8).fill = blue_fill
+                    ws.cell(row=row_idx, column=4, value=M1_val).fill = yellow_fill
+                    ws.cell(row=row_idx, column=5, value="")
+                    ws.cell(row=row_idx, column=6, value=T_val).fill = orange_fill
+                    ws.cell(row=row_idx, column=7, value="")
+                    ws.cell(row=row_idx, column=8, value="Priority")
+                    ws.cell(row=row_idx, column=9, value="2nd")
+                    ws.cell(row=row_idx, column=10, value="3rd")
+                    ws.cell(row=row_idx, column=11, value="Backup")
+                    for col in range(1, 12):               # 1–11 in your snippet
+                        ws.cell(row=row_idx, column=col).alignment = center
+                    
                     # The second row
-                    triple_str = f"({M_val}, {S_val}, {T_val})"
-                    row_2 = row_idx + 1
-                    ws.cell(row=row_2, column=1, value=triple_str)
-                    ws.cell(row=row_2, column=2, value=4)
-                    ws.cell(row=row_2, column=3, value=8)
-                    ws.cell(row=row_2, column=4, value=(S_val - 1))
-                    ws.cell(row=row_2, column=5, value=T_val).fill = yellow_fill
+                    triple_str = f"({M_val}, {S_val}, {T_val}, {G_val}, {E_val})"
+                    row_idx = row_idx + 1
+                    ws.cell(row=row_idx, column=1, value=triple_str)
+                    ws.cell(row=row_idx, column=2, value=G_val).fill = light_blue_fill
+                    ws.cell(row=row_idx, column=3, value=M_val).fill = purple_fill
+                    ws.cell(row=row_idx, column=4, value=S_val).fill = green_fill
+                    ws.cell(row=row_idx, column=5, value=E_val).fill = tea_green_fill
+                    ws.cell(row=row_idx, column=6, value="").fill = orange_fill
+                    ws.cell(row=row_idx, column=7, value="")
+                    # ws.cell(row=row_2, column=5, value=T_val).fill = yellow_fill
 
                     # We also want to show counts in columns 7..10:
-                    ws.cell(row=row_2, column=7, value=df.iloc[idx]['Priority_count'])
-                    ws.cell(row=row_2, column=8, value=df.iloc[idx]['2nd_count'])
-                    ws.cell(row=row_2, column=9, value=df.iloc[idx]['3rd_count'])
-                    ws.cell(row=row_2, column=10, value=df.iloc[idx]['Backup_count'])
+                    ws.cell(row=row_idx, column=8, value=df.iloc[idx]['Priority_count'])
+                    ws.cell(row=row_idx, column=9, value=df.iloc[idx]['2nd_count'])
+                    ws.cell(row=row_idx, column=10, value=df.iloc[idx]['3rd_count'])
+                    ws.cell(row=row_idx, column=11, value=df.iloc[idx]['Backup_count'])
+                    for col in range(1, 12):               # 1–11 in your snippet
+                        ws.cell(row=row_idx, column=col).alignment = center
 
+                    row_idx+=1
+                    ws.cell(row=row_idx, column=1, value="")
+                    ws.cell(row=row_idx, column=2, value="Gen").fill = light_blue_fill
+                    ws.cell(row=row_idx, column=3, value="Main").fill = purple_fill
+                    ws.cell(row=row_idx, column=4, value="Subsidary").fill = green_fill
+                    ws.cell(row=row_idx, column=5, value="Exterior").fill = tea_green_fill
+                    ws.cell(row=row_idx, column=6, value="Total").fill = orange_fill
+                    for col in range(1, 12):               # 1–11 in your snippet
+                        ws.cell(row=row_idx, column=col).alignment = center
                     # The third row is blank
-                    for c in range(1, 11):
+                    for c in range(1, 12):
                         ws.cell(row=row_idx+2, column=c, value="")
 
                     # Move to the next triple
@@ -962,38 +1081,68 @@ def main():
                     M_val = df.iloc[idx]['Main']
                     S_val = df.iloc[idx]['Subsidary']
                     T_val = df.iloc[idx]['Total']
+                    G_val = df.iloc[idx]['Gen']
+                    E_val = df.iloc[idx]['Ext']
+                    M1_val = df_with_inter.iloc[idx]['M1']
+                    M2_val = df_with_inter.iloc[idx]['M2']
 
-                    # The top row
                     ws.cell(row=row_idx, column=1, value="")
-                    ws.cell(row=row_idx, column=2, value="")
-                    ws.cell(row=row_idx, column=3, value=M_val).fill = green_fill
-                    ws.cell(row=row_idx, column=4, value=S_val).fill = blue_fill
-                    ws.cell(row=row_idx, column=5, value="")
+                    ws.cell(row=row_idx, column=2, value="X1").fill = blue_fill
+                    ws.cell(row=row_idx, column=3, value="X2").fill = blue_fill
+                    ws.cell(row=row_idx, column=4, value="M1").fill = yellow_fill
+                    ws.cell(row=row_idx, column=5, value="M2").fill = peach_fill
                     ws.cell(row=row_idx, column=6, value="")
-                    ws.cell(row=row_idx, column=7, value="")
-                    ws.cell(row=row_idx, column=8, value="Priority")
-                    ws.cell(row=row_idx, column=9, value="2nd")
-                    ws.cell(row=row_idx, column=10, value="3rd")
-                    ws.cell(row=row_idx, column=11, value="Backup")
-
+                    ws.cell(row=row_idx, column=7, value="Double Dual").fill = purple_fill
+                    for col in range(1, 13):               # 1–11 in your snippet
+                        ws.cell(row=row_idx, column=col).alignment = center
+                    
+                    row_idx = row_idx + 1
+                    # The top row
+                    ws.cell(row=row_idx, column=1, value="(M,S,T,G,E)")
+                    ws.cell(row=row_idx, column=2, value=5).fill = blue_fill
+                    ws.cell(row=row_idx, column=3, value=15).fill = blue_fill
+                    ws.cell(row=row_idx, column=4, value=M1_val).fill = yellow_fill
+                    ws.cell(row=row_idx, column=5, value=M2_val).fill = peach_fill
+                    ws.cell(row=row_idx, column=6, value="")
+                    ws.cell(row=row_idx, column=7, value=T_val).fill = orange_fill
+                    ws.cell(row=row_idx, column=8, value="")
+                    ws.cell(row=row_idx, column=9, value="Priority")
+                    ws.cell(row=row_idx, column=10, value="2nd")
+                    ws.cell(row=row_idx, column=11, value="3rd")
+                    ws.cell(row=row_idx, column=12, value="Backup")
+                    for col in range(1, 13):               # 1–11 in your snippet
+                        ws.cell(row=row_idx, column=col).alignment = center
+                    
                     # The second row
-                    triple_str = f"({M_val}, {S_val}, {T_val})"
-                    row_2 = row_idx + 1
-                    ws.cell(row=row_2, column=1, value=triple_str)
-                    ws.cell(row=row_2, column=2, value=15)
-                    ws.cell(row=row_2, column=3, value=15)
-                    ws.cell(row=row_2, column=4, value=(M_val - 15))
-                    ws.cell(row=row_2, column=5, value=(S_val - M_val + 15))
-                    ws.cell(row=row_2, column=6, value=T_val).fill = yellow_fill
+                    triple_str = f"({M_val}, {S_val}, {T_val}, {G_val}, {E_val})"
+                    row_idx = row_idx + 1
+                    ws.cell(row=row_idx, column=1, value=triple_str)
+                    ws.cell(row=row_idx, column=2, value=G_val).fill = light_blue_fill
+                    ws.cell(row=row_idx, column=3, value=M_val).fill = purple_fill
+                    ws.cell(row=row_idx, column=4, value=S_val).fill = green_fill
+                    ws.cell(row=row_idx, column=5, value="").fill = green_fill
+                    ws.cell(row=row_idx, column=6, value=E_val).fill = tea_green_fill
+                    ws.cell(row=row_idx, column=7, value="").fill = orange_fill
+                    ws.cell(row=row_idx, column=8, value="")
+                    ws.cell(row=row_idx, column=9, value=df.iloc[idx]['Priority_count'])
+                    ws.cell(row=row_idx, column=10, value=df.iloc[idx]['2nd_count'])
+                    ws.cell(row=row_idx, column=11, value=df.iloc[idx]['3rd_count'])
+                    ws.cell(row=row_idx, column=12, value=df.iloc[idx]['Backup_count'])
+                    for col in range(1, 13):               # 1–11 in your snippet
+                        ws.cell(row=row_idx, column=col).alignment = center
 
-                    # We also want to show counts in columns 7..10:
-                    ws.cell(row=row_2, column=8, value=df.iloc[idx]['Priority_count'])
-                    ws.cell(row=row_2, column=9, value=df.iloc[idx]['2nd_count'])
-                    ws.cell(row=row_2, column=10, value=df.iloc[idx]['3rd_count'])
-                    ws.cell(row=row_2, column=11, value=df.iloc[idx]['Backup_count'])
-
+                    row_idx+=1
+                    ws.cell(row=row_idx, column=1, value="")
+                    ws.cell(row=row_idx, column=2, value="Gen").fill = light_blue_fill
+                    ws.cell(row=row_idx, column=3, value="Main").fill = purple_fill
+                    ws.cell(row=row_idx, column=4, value="Subsidary").fill = green_fill
+                    ws.cell(row=row_idx, column=5, value="").fill = green_fill
+                    ws.cell(row=row_idx, column=6, value="Exterior").fill = tea_green_fill
+                    ws.cell(row=row_idx, column=7, value="Total").fill = orange_fill
+                    for col in range(1, 13):               # 1–11 in your snippet
+                        ws.cell(row=row_idx, column=col).alignment = center
                     # The third row is blank
-                    for c in range(1, 12):
+                    for c in range(1, 13):
                         ws.cell(row=row_idx+2, column=c, value="")
 
                     # Move to the next triple
