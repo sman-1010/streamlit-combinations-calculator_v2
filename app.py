@@ -40,13 +40,13 @@ def is_valid_triple(A, B, C, counts, strict_switch, nwis):
             return False
     return True
 
-def is_valid_triple_single(M, S, T, Gen, Ext, counts, strict_switch, nwis):
+def is_valid_triple_single(M, S, T, Ext, Gen, counts, strict_switch, nwis):
     """
     Check if the triple (A, B, C) can be formed with available counts.
     If strict_switch is True, apply extra checks involving nwis.
     """
     from collections import Counter
-    temp_counts = Counter([M, S, T, Gen, Ext])
+    temp_counts = Counter([M, S, T, Ext, Gen])
     
     # If strict_switch is on, apply extra NWIS logic
     if strict_switch:
@@ -59,13 +59,13 @@ def is_valid_triple_single(M, S, T, Gen, Ext, counts, strict_switch, nwis):
             return False
     return True
 
-def is_valid_triple_dual(M, S, T, Gen, Ext, counts, strict_switch, nwis):
+def is_valid_triple_dual(M, S, T, Ext, Gen, counts, strict_switch, nwis):
     """
     Check if the triple (A, B, C) can be formed with available counts.
     If strict_switch is True, apply extra checks involving nwis.
     """
     from collections import Counter
-    temp_counts = Counter([M, S, T, Gen, Ext])
+    temp_counts = Counter([M, S, T, Ext, Gen])
     
     # If strict_switch is on, apply extra NWIS logic
     if strict_switch:
@@ -80,13 +80,13 @@ def is_valid_triple_dual(M, S, T, Gen, Ext, counts, strict_switch, nwis):
             return False
     return True
 
-def is_valid_triple_double_dual(M, S, T, Gen, Ext, counts, strict_switch, nwis):
+def is_valid_triple_double_dual(M, S, T, Ext, Gen, counts, strict_switch, nwis):
     """
     Check if the triple (A, B, C) can be formed with available counts.
     If strict_switch is True, apply extra checks involving nwis.
     """
     from collections import Counter
-    temp_counts = Counter([M, S, T, Gen, Ext])
+    temp_counts = Counter([M, S, T, Ext, Gen])
     
     # If strict_switch is on, apply extra NWIS logic
     if strict_switch:
@@ -101,13 +101,13 @@ def is_valid_triple_double_dual(M, S, T, Gen, Ext, counts, strict_switch, nwis):
             return False
     return True
 
-def is_valid_triple_double_single(M, S, T, Gen, Ext, counts, strict_switch, nwis):
+def is_valid_triple_double_single(M, S, T, Ext, Gen, counts, strict_switch, nwis):
     """
     Check if the triple (A, B, C) can be formed with available counts.
     If strict_switch is True, apply extra checks involving nwis.
     """
     from collections import Counter
-    temp_counts = Counter([M, S, T, Gen, Ext])
+    temp_counts = Counter([M, S, T, Ext, Gen])
     
     # If strict_switch is on, apply extra NWIS logic
     if strict_switch:
@@ -314,7 +314,9 @@ def main():
     # ---------------------------------------------------------------
     # 2) DATA AND PARAMETERS - user editable
     # ---------------------------------------------------------------
-
+    # Get numeric input from user
+    X1 = st.number_input("Enter X1", value=5, step=1)
+    X2 = st.number_input("Enter X2", value=15, step=1)
     # strict_switch = st.checkbox("Enable strict_switch (NWIS check in intermediate steps)", value=False)
     # default_main = "1,3,5,9,11,13,15,16,21,23,24,25,29,31,32,33,35,37,39,41,45,47,48,52,57,65,67,68,82"
     default_main = "1,3,5,11,13,15,16,21,23,24,25,29,31,32,33,35,37,39,41,45,47,48,52,57,65,67,68,82"
@@ -366,6 +368,7 @@ def main():
 
             valid_triples = []
             temp_skip = False
+            # X1 = 5
             Gen = 6
             Ext = 2
             if Gen in counts and Ext in counts:
@@ -379,10 +382,10 @@ def main():
                         if toggle_M_S and M in nwis:
                             continue
 
-                        if not M > 5:
+                        if not M > X1:
                             continue
                         
-                        S = M - 4
+                        S = M - X1 + 1
                         if S not in counts:
                             continue
                         if toggle_M_S and S in nwis:
@@ -391,8 +394,37 @@ def main():
                         T = M
                         if toggle_T and T in nwis:
                             continue
-                        if is_valid_triple_single(M, S, T, Gen, Ext, counts, strict_switch, nwis):
-                            valid_triples.append((M, S, T, Gen, Ext))                            
+                        if is_valid_triple_single(M, S, T, Ext, Gen, counts, strict_switch, nwis):
+                            valid_triples.append((M, S, T, Ext, Gen))                            
+            # valid_triples = []
+            # temp_skip = False
+            # Gen = 6
+            # Ext = 2
+            # if Gen in counts and Ext in counts:
+            #     if toggle_G and Gen in nwis:
+            #         temp_skip = True                    
+            #     if toggle_E and Ext in nwis:                
+            #         temp_skip = True                    
+
+            #     if not temp_skip:
+            #         for M in unique_sorted:
+            #             if toggle_M_S and M in nwis:
+            #                 continue
+
+            #             if not M > 5:
+            #                 continue
+                        
+            #             S = M - 4
+            #             if S not in counts:
+            #                 continue
+            #             if toggle_M_S and S in nwis:
+            #                 continue
+                        
+            #             T = M
+            #             if toggle_T and T in nwis:
+            #                 continue
+            #             if is_valid_triple_single(M, S, T, Ext, Gen, counts, strict_switch, nwis):
+            #                 valid_triples.append((M, S, T, Ext, Gen))                            
             
             # 4d) Sort the triples and build a dataframe
             triple_bins = [
@@ -400,19 +432,27 @@ def main():
                 for triple in valid_triples
             ]
             # triple_bins_sorted = sorted(triple_bins, key=lambda x: x[0][0])
+            # triple_bins_sorted = sorted(
+            #     triple_bins,
+            #     key=lambda x: (-x[1][0], -x[1][1], -x[1][2], -x[1][3], x[0])
+            # )            
             triple_bins_sorted = sorted(
                 triple_bins,
-                key=lambda x: (-x[1][0], -x[1][1], -x[1][2], -x[1][3], x[0])
-            )            
+                key=lambda x: (
+                    -x[1][0], -x[1][1], -x[1][2], -x[1][3],   # bins descending
+                    sum(x[0]),                               # sum ascending
+                    x[0][0], x[0][1], x[0][2], x[0][3], x[0][4]  # M, S, T, Ext, Gen ascending
+                )
+            )
 
             rows = []
             for triple, bins_count in triple_bins_sorted:
                 # A, B, C_ = triple
-                M, S, T, Gen, Ext = triple
+                M, S, T, Ext, Gen = triple
                 # Row: [B, C, A] + [Priority_count, 2nd_count, 3rd_count, Backup_count]
-                rows.append([M, S, T, Gen, Ext] + bins_count)
+                rows.append([M, S, T, Ext, Gen] + bins_count)
 
-            columns = ['Main', 'Subsidary', 'Total', 'Gen', 'Ext', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count']
+            columns = ['Main', 'Subsidary', 'Total', 'Ext', 'Gen', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count']
             df = pd.DataFrame(rows, columns=columns)
 
             # Keep only rows that used exactly 3 items
@@ -422,12 +462,12 @@ def main():
             rows = []
             for triple, bins_count in triple_bins_sorted:
                 # M, S, T = triple
-                M, S, T, Gen, Ext = triple
+                M, S, T, Ext, Gen = triple
 
                 # Row: [B, C, A] + [Priority_count, 2nd_count, 3rd_count, Backup_count]
-                rows.append([M, S, T, Gen, Ext]+[M-5, 0] + bins_count)
+                rows.append([M, S, T, Ext, Gen]+[M-X1, 0] + bins_count +[sum([M, S, T, Ext, Gen])])
 
-            columns_triple = ['Main', 'Subsidary', 'Total', 'Gen', 'Ext','M1','M2', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count']
+            columns_triple = ['Main', 'Subsidary', 'Total', 'Ext', 'Gen','M1','M2', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count','Sum(M,S,T,E,G)']
             df_with_inter = pd.DataFrame(rows, columns=columns_triple)
 
             # Keep only rows that used exactly 3 items
@@ -442,8 +482,8 @@ def main():
             # Creating the new DataFrame with empty spaces
             new_rows = []
             for _, row in df_with_inter.iterrows():
-                new_rows.append([5, row['M1'], row['M2'],'', row['Total'], '', row['Priority_count'], row['2nd_count'], row['3rd_count'], row['Backup_count']])
-                new_rows.append([row['Gen'], row['Main'], row['Subsidary'],row['Ext'], '', '', 'Main', '2nd', '3rd', 'Backup'])
+                new_rows.append([X1, row['M1'], row['M2'],'', row['Total'], '', row['Priority_count'], row['2nd_count'], row['3rd_count'], row['Backup_count']])
+                new_rows.append([row['Gen'], row['Main'], row['Subsidary'],row['Ext'], '', '', 'Priority', '2nd', '3rd', 'Backup'])
                 new_rows.append([''] * 10)  # Empty row
 
             # Creating the new DataFrame
@@ -457,7 +497,8 @@ def main():
 
             valid_triples = []
             temp_skip = False
-            Gen = 6
+            # X1 = 5
+            Gen = X1 + 1
             if Gen in counts:
                 if toggle_G and Gen in nwis:
                     temp_skip = True                    
@@ -468,28 +509,28 @@ def main():
                     for M in unique_sorted:
                         if toggle_M_S and M in nwis:
                             continue
-                        if not M > 5:
+                        if not M > X1:
                             continue
                         
-                        M1 = M - 5
+                        M1 = M - X1
                         for S in unique_sorted:
                             if not S > M1:
                                 continue
                             
-                            T = S + 5
+                            T = S + X1
                             if T not in counts:
                                 continue                        
                             if toggle_T and T in nwis:
                                 continue
                             
-                            Ext = S - M + 6
+                            Ext = S - M + X1 + 1
                             if Ext not in counts:
                                 continue          
                             if toggle_E and Ext in nwis:
                                 continue
   
-                            if is_valid_triple_dual(M, S, T, Gen, Ext, counts, strict_switch, nwis):
-                                valid_triples.append((M, S, T, Gen, Ext))                                    
+                            if is_valid_triple_dual(M, S, T, Ext, Gen, counts, strict_switch, nwis):
+                                valid_triples.append((M, S, T, Ext, Gen))                                    
 
                          
             
@@ -498,11 +539,23 @@ def main():
                 (triple, compute_bins(triple, Main, G, R, C_list)) 
                 for triple in valid_triples
             ]
-            # Sort by bins in descending priority order
+            # triple_bins_sorted = sorted(
+            #     triple_bins,
+            #     key=lambda x: (
+            #         -x[1][0], -x[1][1], -x[1][2], -x[1][3], 
+            #         sum(x[0])  # sum of (M, S, T, Ext, Gen)
+            #     )
+            # )
             triple_bins_sorted = sorted(
                 triple_bins,
-                key=lambda x: (-x[1][0], -x[1][1], -x[1][2], -x[1][3], x[0])
+                key=lambda x: (
+                    -x[1][0], -x[1][1], -x[1][2], -x[1][3],   # bins descending
+                    sum(x[0]),                               # sum ascending
+                    x[0][0], x[0][1], x[0][2], x[0][3], x[0][4]  # M, S, T, Ext, Gen ascending
+                )
             )
+
+
 
 
             # triple_bins_sorted = sorted(triple_bins, key=lambda x: x[0][0])
@@ -510,11 +563,11 @@ def main():
             rows = []
             for triple, bins_count in triple_bins_sorted:
                 # A, B, C_ = triple
-                M, S, T, Gen, Ext = triple
+                M, S, T, Ext, Gen = triple
                 # Row: [B, C, A] + [Priority_count, 2nd_count, 3rd_count, Backup_count]
-                rows.append([M, S, T, Gen, Ext] + bins_count)
+                rows.append([M, S, T, Ext, Gen] + bins_count)
 
-            columns = ['Main', 'Subsidary', 'Total', 'Gen', 'Ext', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count']
+            columns = ['Main', 'Subsidary', 'Total', 'Ext', 'Gen', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count']
             df = pd.DataFrame(rows, columns=columns)
 
             # Keep only rows that used exactly 3 items
@@ -523,12 +576,12 @@ def main():
             # With intermediate values
             rows = []
             for triple, bins_count in triple_bins_sorted:
-                M, S, T, Gen, Ext = triple
+                M, S, T, Ext, Gen = triple
 
                 # Row: [B, C, A] + [Priority_count, 2nd_count, 3rd_count, Backup_count]
-                rows.append([M, S, T, Gen, Ext]+[M-5, S-M+5] + bins_count)
+                rows.append([M, S, T, Ext, Gen]+[M-X1, S-M+X1] + bins_count +[sum([M, S, T, Ext, Gen])])
 
-            columns_triple = ['Main', 'Subsidary', 'Total', 'Gen', 'Ext','M1','M2', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count']
+            columns_triple = ['Main', 'Subsidary', 'Total', 'Ext', 'Gen','M1','M2', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count','Sum(M,S,T,E,G)']
             df_with_inter = pd.DataFrame(rows, columns=columns_triple)
 
             # Keep only rows that used exactly 3 items
@@ -543,11 +596,10 @@ def main():
             # Creating the new DataFrame with empty spaces
             new_rows = []
             for _, row in df_with_inter.iterrows():
-                # new_rows.append(['', row['Main'], row['Subsidary'], '', '', 'Main', '2nd', '3rd', 'Backup'])
                 # new_rows.append([5, row['M1'], row['M2'], row['Total'], '', row['Priority_count'], row['2nd_count'], row['3rd_count'], row['Backup_count']])
                 # new_rows.append([''] * 9)  # Empty row
-                new_rows.append([5, row['M1'], row['M2'],'', row['Total'], '', row['Priority_count'], row['2nd_count'], row['3rd_count'], row['Backup_count']])
-                new_rows.append([row['Gen'], row['Main'], row['Subsidary'],row['Ext'], '', '', 'Main', '2nd', '3rd', 'Backup'])
+                new_rows.append([X1, row['M1'], row['M2'],'', row['Total'], '', row['Priority_count'], row['2nd_count'], row['3rd_count'], row['Backup_count']])
+                new_rows.append([row['Gen'], row['Main'], row['Subsidary'],row['Ext'], '', '', 'Priority', '2nd', '3rd', 'Backup'])
                 new_rows.append([''] * 10)  # Empty row                
 
             # Creating the new DataFrame
@@ -561,7 +613,9 @@ def main():
 
             valid_triples = []
             temp_skip = False
-            Gen = 6
+            # X1 = 5
+            # X2 = 8
+            Gen = X1 + 1
             Ext = Gen
             if Gen in counts:
                 if toggle_G and Gen in nwis:
@@ -573,16 +627,16 @@ def main():
                     for M in unique_sorted:
                         if toggle_M_S and M in nwis:
                             continue
-                        if not M > 8:
+                        if not M > X2:
                             continue
                         
-                        S = M - 7
+                        S = M - X2 + 1
                         if S not in counts:
                             continue
                         if toggle_M_S and S in nwis:
                             continue
 
-                        T = 5 + M
+                        T = X1 + M
                         if T not in counts:
                             continue    
                         if toggle_T and T in nwis:
@@ -590,8 +644,8 @@ def main():
 
                         # if is_valid_triple_dual(M, S, T, counts, strict_switch, nwis):
                         #     valid_triples.append((M, S, T))   
-                        if is_valid_triple_double_single(M, S, T, Gen, Ext, counts, strict_switch, nwis):
-                            valid_triples.append((M, S, T, Gen, Ext))                              
+                        if is_valid_triple_double_single(M, S, T, Ext, Gen, counts, strict_switch, nwis):
+                            valid_triples.append((M, S, T, Ext, Gen))                              
 
                          
             
@@ -600,20 +654,24 @@ def main():
                 (triple, compute_bins(triple, Main, G, R, C_list)) 
                 for triple in valid_triples
             ]
-            # Sort by bins in descending priority order
             triple_bins_sorted = sorted(
                 triple_bins,
-                key=lambda x: (-x[1][0], -x[1][1], -x[1][2], -x[1][3], x[0])
+                key=lambda x: (
+                    -x[1][0], -x[1][1], -x[1][2], -x[1][3],   # bins descending
+                    sum(x[0]),                               # sum ascending
+                    x[0][0], x[0][1], x[0][2], x[0][3], x[0][4]  # M, S, T, Ext, Gen ascending
+                )
             )
+
 
             rows = []
             for triple, bins_count in triple_bins_sorted:
                 # A, B, C_ = triple
-                M, S, T, Gen, Ext = triple
+                M, S, T, Ext, Gen = triple
                 # Row: [B, C, A] + [Priority_count, 2nd_count, 3rd_count, Backup_count]
-                rows.append([M, S, T, Gen, Ext] + bins_count)
+                rows.append([M, S, T, Ext, Gen] + bins_count)
 
-            columns = ['Main', 'Subsidary', 'Total', 'Gen', 'Ext', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count']
+            columns = ['Main', 'Subsidary', 'Total', 'Ext', 'Gen', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count']
             df = pd.DataFrame(rows, columns=columns)
 
             # Keep only rows that used exactly 3 items
@@ -622,12 +680,12 @@ def main():
             # With intermediate values
             rows = []
             for triple, bins_count in triple_bins_sorted:
-                M, S, T, Gen, Ext = triple
+                M, S, T, Ext, Gen = triple
 
                 # Row: [B, C, A] + [Priority_count, 2nd_count, 3rd_count, Backup_count]
-                rows.append([M, S, T, Gen, Ext]+[S-1] + bins_count)
+                rows.append([M, S, T, Ext, Gen]+[S-1] + bins_count +[sum([M, S, T, Ext, Gen])])
 
-            columns_triple = ['Main', 'Subsidary', 'Total', 'Gen', 'Ext', 'M1', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count']
+            columns_triple = ['Main', 'Subsidary', 'Total', 'Ext', 'Gen', 'M1', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count','Sum(M,S,T,E,G)']
             df_with_inter = pd.DataFrame(rows, columns=columns_triple)
 
             # Keep only rows that used exactly 3 items
@@ -642,8 +700,8 @@ def main():
             # Creating the new DataFrame with empty spaces
             new_rows = []
             for _, row in df_with_inter.iterrows():
-                new_rows.append([5, 8, row['M1'],'', row['Total'], '', row['Priority_count'], row['2nd_count'], row['3rd_count'], row['Backup_count']])
-                new_rows.append([row['Gen'], row['Main'], row['Subsidary'],row['Ext'], '', '', 'Main', '2nd', '3rd', 'Backup'])
+                new_rows.append([X1, X2, row['M1'],'', row['Total'], '', row['Priority_count'], row['2nd_count'], row['3rd_count'], row['Backup_count']])
+                new_rows.append([row['Gen'], row['Main'], row['Subsidary'],row['Ext'], '', '', 'Priority', '2nd', '3rd', 'Backup'])
                 new_rows.append([''] * 10 )  # Empty row
 
             # Creating the new DataFrame
@@ -658,7 +716,9 @@ def main():
 
             valid_triples = []
             temp_skip = False
-            Gen = 6
+            # X1 = 5
+            # X2 = 15            
+            Gen = X1 + 1
             if Gen in counts:
                 if toggle_G and Gen in nwis:
                     temp_skip = True                    
@@ -669,28 +729,28 @@ def main():
                     for M in unique_sorted:
                         if toggle_M_S and M in nwis:
                             continue
-                        if not M > 15:
+                        if not M > X2:
                             continue
                         
-                        M1 = M - 15
+                        M1 = M - X2
                         for S in unique_sorted:
                             if not S > M1:
                                 continue
                             
-                            T = S + 20
+                            T = S + X1 + X2
                             if T not in counts:
                                 continue                        
                             if toggle_T and T in nwis:
                                 continue
 
-                            Ext = S - M + 20
+                            Ext = S - M + X1 + X2
                             if Ext not in counts:
                                 continue          
                             if toggle_E and Ext in nwis:
                                 continue
 
-                            if is_valid_triple_double_dual(M, S, T, Gen, Ext, counts, strict_switch, nwis):
-                                valid_triples.append((M, S, T, Gen, Ext))   
+                            if is_valid_triple_double_dual(M, S, T, Ext, Gen, counts, strict_switch, nwis):
+                                valid_triples.append((M, S, T, Ext, Gen))   
 
                          
             
@@ -702,17 +762,22 @@ def main():
             # Sort by bins in descending priority order
             triple_bins_sorted = sorted(
                 triple_bins,
-                key=lambda x: (-x[1][0], -x[1][1], -x[1][2], -x[1][3], x[0])
+                key=lambda x: (
+                    -x[1][0], -x[1][1], -x[1][2], -x[1][3],   # bins descending
+                    sum(x[0]),                               # sum ascending
+                    x[0][0], x[0][1], x[0][2], x[0][3], x[0][4]  # M, S, T, Ext, Gen ascending
+                )
             )
+
 
             rows = []
             for triple, bins_count in triple_bins_sorted:
                 # A, B, C_ = triple
-                M, S, T, Gen, Ext = triple
+                M, S, T, Ext, Gen = triple
                 # Row: [B, C, A] + [Priority_count, 2nd_count, 3rd_count, Backup_count]
-                rows.append([M, S, T, Gen, Ext] + bins_count)
+                rows.append([M, S, T, Ext, Gen] + bins_count)
 
-            columns = ['Main', 'Subsidary', 'Total', 'Gen', 'Ext', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count']
+            columns = ['Main', 'Subsidary', 'Total', 'Ext', 'Gen', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count']
             df = pd.DataFrame(rows, columns=columns)
 
             # Keep only rows that used exactly 3 items
@@ -721,12 +786,12 @@ def main():
             # With intermediate values
             rows = []
             for triple, bins_count in triple_bins_sorted:
-                M, S, T, Gen, Ext = triple
+                M, S, T, Ext, Gen = triple
 
                 # Row: [B, C, A] + [Priority_count, 2nd_count, 3rd_count, Backup_count]
-                rows.append([M, S, T, Gen, Ext]+[M-15, S-M+15] + bins_count)
+                rows.append([M, S, T, Ext, Gen]+[M-X2, S-M+X2] + bins_count +[sum([M, S, T, Ext, Gen])])
 
-            columns_triple = ['Main', 'Subsidary', 'Total', 'Gen', 'Ext','M1','M2', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count']
+            columns_triple = ['Main', 'Subsidary', 'Total', 'Ext', 'Gen','M1','M2', 'Priority_count', '2nd_count', '3rd_count', 'Backup_count','Sum(M,S,T,E,G)']
             df_with_inter = pd.DataFrame(rows, columns=columns_triple)
 
             # Keep only rows that used exactly 3 items
@@ -738,11 +803,11 @@ def main():
             df_with_inter.index = range(1, len(df_with_inter) + 1)
             st.dataframe(df_with_inter)  # Show a sample
 
-            # Creating the new DataFrame with empty spaces
+            # Creating the new DataFrame with empty spaces 
             new_rows = []
             for _, row in df_with_inter.iterrows():
-                new_rows.append([5,15, row['M1'], row['M2'],'', row['Total'], '', row['Priority_count'], row['2nd_count'], row['3rd_count'], row['Backup_count']])
-                new_rows.append([6, row['Main'], row['Subsidary'], '',row['Ext'],'', '', 'Main', '2nd', '3rd', 'Backup'])
+                new_rows.append([X1,X2, row['M1'], row['M2'],'', row['Total'], '', row['Priority_count'], row['2nd_count'], row['3rd_count'], row['Backup_count']])
+                new_rows.append([row['Gen'], row['Main'], row['Subsidary'], '',row['Ext'],'', '', 'Priority', '2nd', '3rd', 'Backup'])
                 new_rows.append([''] * 10)  # Empty row
 
             # Creating the new DataFrame
@@ -805,7 +870,7 @@ def main():
             # Creating the new DataFrame with empty spaces
             new_rows = []
             for _, row in df_with_inter.iterrows():
-                new_rows.append(['', row['B'], '', '', '', 'Main', '2nd', '3rd', 'Backup'])
+                new_rows.append(['', row['B'], '', '', '', 'Priority', '2nd', '3rd', 'Backup'])
                 new_rows.append([5, row['M1'], '', row['SUM'], '', row['Priority_count'], row['2nd_count'], row['3rd_count'], row['Backup_count']])
                 new_rows.append([''] * 9)  # Empty row
 
@@ -883,8 +948,8 @@ def main():
                     
                     row_idx = row_idx + 1
                     # The top row
-                    ws.cell(row=row_idx, column=1, value="(M,S,T,G,E)")
-                    ws.cell(row=row_idx, column=2, value=5).fill = blue_fill
+                    ws.cell(row=row_idx, column=1, value="(M,S,T,E,G)")
+                    ws.cell(row=row_idx, column=2, value=X1).fill = blue_fill
                     ws.cell(row=row_idx, column=3, value=M1_val).fill = yellow_fill
                     ws.cell(row=row_idx, column=4, value="")
                     ws.cell(row=row_idx, column=5, value="")
@@ -898,7 +963,7 @@ def main():
                         ws.cell(row=row_idx, column=col).alignment = center
                     
                     # The second row
-                    triple_str = f"({M_val}, {S_val}, {T_val}, {G_val}, {E_val})"
+                    triple_str = f"({M_val}, {S_val}, {T_val}, {E_val}, {G_val})"
                     row_idx = row_idx + 1
                     ws.cell(row=row_idx, column=1, value=triple_str)
                     ws.cell(row=row_idx, column=2, value=G_val).fill = light_blue_fill
@@ -949,14 +1014,14 @@ def main():
                     ws.cell(row=row_idx, column=3, value="M1").fill = yellow_fill
                     ws.cell(row=row_idx, column=4, value="M2").fill = peach_fill
                     ws.cell(row=row_idx, column=5, value="")
-                    ws.cell(row=row_idx, column=6, value="Single").fill = purple_fill
+                    ws.cell(row=row_idx, column=6, value="Dual").fill = purple_fill
                     for col in range(1, 12):               # 1–11 in your snippet
                         ws.cell(row=row_idx, column=col).alignment = center
                     
                     row_idx = row_idx + 1
                     # The top row
-                    ws.cell(row=row_idx, column=1, value="(M,S,T,G,E)")
-                    ws.cell(row=row_idx, column=2, value=5).fill = blue_fill
+                    ws.cell(row=row_idx, column=1, value="(M,S,T,E,G)")
+                    ws.cell(row=row_idx, column=2, value=X1).fill = blue_fill
                     ws.cell(row=row_idx, column=3, value=M1_val).fill = yellow_fill
                     ws.cell(row=row_idx, column=4, value=M2_val).fill = peach_fill
                     ws.cell(row=row_idx, column=5, value="")
@@ -970,7 +1035,7 @@ def main():
                         ws.cell(row=row_idx, column=col).alignment = center
                     
                     # The second row
-                    triple_str = f"({M_val}, {S_val}, {T_val}, {G_val}, {E_val})"
+                    triple_str = f"({M_val}, {S_val}, {T_val}, {E_val}, {G_val})"
                     row_idx = row_idx + 1
                     ws.cell(row=row_idx, column=1, value=triple_str)
                     ws.cell(row=row_idx, column=2, value=G_val).fill = light_blue_fill
@@ -1025,9 +1090,9 @@ def main():
                     
                     row_idx = row_idx + 1
                     # The top row
-                    ws.cell(row=row_idx, column=1, value="(M,S,T,G,E)")
-                    ws.cell(row=row_idx, column=2, value=5).fill = blue_fill
-                    ws.cell(row=row_idx, column=3, value=8).fill = blue_fill
+                    ws.cell(row=row_idx, column=1, value="(M,S,T,E,G)")
+                    ws.cell(row=row_idx, column=2, value=X1).fill = blue_fill
+                    ws.cell(row=row_idx, column=3, value=X2).fill = blue_fill
                     ws.cell(row=row_idx, column=4, value=M1_val).fill = yellow_fill
                     ws.cell(row=row_idx, column=5, value="")
                     ws.cell(row=row_idx, column=6, value=T_val).fill = orange_fill
@@ -1040,7 +1105,7 @@ def main():
                         ws.cell(row=row_idx, column=col).alignment = center
                     
                     # The second row
-                    triple_str = f"({M_val}, {S_val}, {T_val}, {G_val}, {E_val})"
+                    triple_str = f"({M_val}, {S_val}, {T_val}, {E_val}, {G_val})"
                     row_idx = row_idx + 1
                     ws.cell(row=row_idx, column=1, value=triple_str)
                     ws.cell(row=row_idx, column=2, value=G_val).fill = light_blue_fill
@@ -1098,9 +1163,9 @@ def main():
                     
                     row_idx = row_idx + 1
                     # The top row
-                    ws.cell(row=row_idx, column=1, value="(M,S,T,G,E)")
-                    ws.cell(row=row_idx, column=2, value=5).fill = blue_fill
-                    ws.cell(row=row_idx, column=3, value=15).fill = blue_fill
+                    ws.cell(row=row_idx, column=1, value="(M,S,T,E,G)")
+                    ws.cell(row=row_idx, column=2, value=X1).fill = blue_fill
+                    ws.cell(row=row_idx, column=3, value=X2).fill = blue_fill
                     ws.cell(row=row_idx, column=4, value=M1_val).fill = yellow_fill
                     ws.cell(row=row_idx, column=5, value=M2_val).fill = peach_fill
                     ws.cell(row=row_idx, column=6, value="")
@@ -1114,7 +1179,7 @@ def main():
                         ws.cell(row=row_idx, column=col).alignment = center
                     
                     # The second row
-                    triple_str = f"({M_val}, {S_val}, {T_val}, {G_val}, {E_val})"
+                    triple_str = f"({M_val}, {S_val}, {T_val}, {E_val}, {G_val})"
                     row_idx = row_idx + 1
                     ws.cell(row=row_idx, column=1, value=triple_str)
                     ws.cell(row=row_idx, column=2, value=G_val).fill = light_blue_fill
@@ -1143,46 +1208,6 @@ def main():
                         ws.cell(row=row_idx, column=col).alignment = center
                     # The third row is blank
                     for c in range(1, 13):
-                        ws.cell(row=row_idx+2, column=c, value="")
-
-                    # Move to the next triple
-                    row_idx += 3
-                    idx += 1
-            else:
-                while idx < len(df):
-                    B_val = df.iloc[idx]['B']
-                    SUM_val = df.iloc[idx]['SUM']
-
-                    # The top row
-                    ws.cell(row=row_idx, column=1, value="")
-                    ws.cell(row=row_idx, column=2, value="")
-                    ws.cell(row=row_idx, column=3, value=B_val).fill = green_fill
-                    ws.cell(row=row_idx, column=4, value="")
-                    ws.cell(row=row_idx, column=5, value="")
-                    ws.cell(row=row_idx, column=6, value="")
-                    ws.cell(row=row_idx, column=7, value="Main")
-                    ws.cell(row=row_idx, column=8, value="G")
-                    ws.cell(row=row_idx, column=9, value="R")
-                    ws.cell(row=row_idx, column=10, value="C")
-
-                    # The second row
-                    triple_str = f"({B_val}, {SUM_val})"
-                    row_2 = row_idx + 1
-                    ws.cell(row=row_2, column=1, value=triple_str)
-                    ws.cell(row=row_2, column=2, value=5)
-                    ws.cell(row=row_2, column=3, value=(B_val - 1))
-                    # ws.cell(row=row_2, column=4, value=(C_val - (B_val - 5)))
-                    ws.cell(row=row_2, column=4, value="")
-                    ws.cell(row=row_2, column=5, value=SUM_val).fill = yellow_fill
-
-                    # We also want to show counts in columns 7..10:
-                    ws.cell(row=row_2, column=7, value=df.iloc[idx]['Priority_count'])
-                    ws.cell(row=row_2, column=8, value=df.iloc[idx]['2nd_count'])
-                    ws.cell(row=row_2, column=9, value=df.iloc[idx]['3rd_count'])
-                    ws.cell(row=row_2, column=10, value=df.iloc[idx]['Backup_count'])
-
-                    # The third row is blank
-                    for c in range(1, 11):
                         ws.cell(row=row_idx+2, column=c, value="")
 
                     # Move to the next triple
